@@ -44,10 +44,11 @@ services:
       - /etc/shadow:/etc/shadow:ro
       - /etc/sudoers:/etc/sudoers:ro
       - ./home:/home/$USER
-      - ./shell/.tmux.conf:/home/$USER/.tmux.conf
+      - ./shell/tmux.conf:/home/$USER/.tmux.conf
+      - ./shell/entrypoint.sh:/home/$USER/entrypoint.sh
 
 
-    #entrypoint: /opt/shell/entrypoint_coder.sh
+    entrypoint: /home/$USER/entrypoint.sh
     #command : "sudo v2raya --reset-password"
     stop_signal: SIGKILL
     pid: "host"
