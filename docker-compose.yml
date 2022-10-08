@@ -16,7 +16,7 @@ services:
 
     cap_add:
       - ALL
-      
+    #hostname: ros-dev
     user: "${UID}:${GID}"
     working_dir : "/home/$USER"
     environment:
@@ -29,6 +29,7 @@ services:
       - SHOW=true
       - QT_X11_NO_MITSHM=1
       - DISPLAY=$DISPLAY
+      - SSH_PORT=2222
     volumes:
       - /lib/modules:/lib/modules:ro 
       - /etc/resolv.conf:/etc/resolv.conf
@@ -46,6 +47,10 @@ services:
       - ./home:/home/$USER
       - ./shell/tmux.conf:/home/$USER/.tmux.conf
       - ./shell/entrypoint.sh:/home/$USER/entrypoint.sh
+      - ./shell/cmake.sh:/home/$USER/cmake.sh
+      - /home/$USER/CLionProjects:/home/$USER/CLionProjects
+      - ./share:/home/$USER/share
+      - /home/$USER/tools:/home/$USER/tools
 
 
     entrypoint: /home/$USER/entrypoint.sh
@@ -57,10 +62,143 @@ services:
     read_only: false
     stdin_open: true
     tty: true
-    cpuset: 0,1
-    cpus: 0.3
-    mem_limit: 300m
-    mem_reservation: 100m
+    #cpuset: 0,1
+    #cpus: 0.3
+    #mem_limit: 300m
+    #mem_reservation: 100m
         
       
 
+  ros2-dev:
+    build:
+      context: ros2-dev
+      network: host  
+    security_opt: # options needed for gdb debugging
+      - seccomp:unconfined
+      - apparmor:unconfined   
+
+    container_name : ros-dev
+    network_mode: "host"
+
+
+    cap_add:
+      - ALL
+    #hostname: ros-dev
+    user: "${UID}:${GID}"
+    working_dir : "/home/$USER"
+    environment:
+      - PYTHONUSERBASE=/home/$USER/python_deps
+      #- http_proxy="" #ok no need to map port
+      #- https_proxy="" #ok no need to map port
+      #- http_proxy=http://127.0.0.1:8889     #ok no need to map port
+      #- https_proxy=http://127.0.0.1:8889    #ok no need to map port
+      - RACK_ENV=development
+      - SHOW=true
+      - QT_X11_NO_MITSHM=1
+      - DISPLAY=$DISPLAY
+      - SSH_PORT=2223
+    volumes:
+      - /lib/modules:/lib/modules:ro 
+      - /etc/resolv.conf:/etc/resolv.conf
+      - /etc/v2raya:/etc/v2raya 
+      - /etc/localtime:/etc/localtime
+      - /etc/machine-id:/etc/machine-id
+      - /var/lib/dbus/machine-id:/var/lib/dbus/machine-id
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - $HOME/.Xauthority:/home/waxz/.Xauthority:rw
+      - /tmp/.docker.xauth:/tmp/.docker.xauth:rw
+      - /etc/group:/etc/group:ro
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/shadow:/etc/shadow:ro
+      - /etc/sudoers:/etc/sudoers:ro
+      - ./home2:/home/$USER
+      - ./shell/tmux.conf:/home/$USER/.tmux.conf
+      - ./shell/entrypoint.sh:/home/$USER/entrypoint.sh
+      - ./shell/cmake.sh:/home/$USER/cmake.sh
+      - /home/$USER/CLionProjects:/home/$USER/CLionProjects
+      - ./share:/home/$USER/share
+      - /home/$USER/tools:/home/$USER/tools
+
+
+    entrypoint: /home/$USER/entrypoint.sh
+    #command : "sudo v2raya --reset-password"
+    stop_signal: SIGKILL
+    pid: "host"
+    ipc: host
+    privileged: true
+    read_only: false
+    stdin_open: true
+    tty: true
+    #cpuset: 0,1
+    #cpus: 0.3
+    #mem_limit: 300m
+    #mem_reservation: 100m
+    
+    
+    
+  cartographer:
+    build:
+      context: cartographer-dev
+      network: host  
+    security_opt: # options needed for gdb debugging
+      - seccomp:unconfined
+      - apparmor:unconfined   
+
+    container_name : cartographer-dev
+    network_mode: "host"
+
+
+    cap_add:
+      - ALL
+    #hostname: ros-dev
+    user: waxz
+    working_dir : "/home/$USER"
+    environment:
+      - PYTHONUSERBASE=/home/$USER/python_deps
+      #- http_proxy="" #ok no need to map port
+      #- https_proxy="" #ok no need to map port
+      #- http_proxy=http://127.0.0.1:8889     #ok no need to map port
+      #- https_proxy=http://127.0.0.1:8889    #ok no need to map port
+      - RACK_ENV=development
+      - SHOW=true
+      - QT_X11_NO_MITSHM=1
+      - DISPLAY=$DISPLAY
+      - SSH_PORT=2224
+    volumes:
+      - /lib/modules:/lib/modules:ro 
+      - /etc/resolv.conf:/etc/resolv.conf
+      - /etc/v2raya:/etc/v2raya 
+      - /etc/localtime:/etc/localtime
+      - /etc/machine-id:/etc/machine-id
+      - /var/lib/dbus/machine-id:/var/lib/dbus/machine-id
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - $HOME/.Xauthority:/home/waxz/.Xauthority:rw
+      - /tmp/.docker.xauth:/tmp/.docker.xauth:rw
+      #- /etc/group:/etc/group:ro
+      #- /etc/passwd:/etc/passwd:ro
+      #- /etc/shadow:/etc/shadow:ro
+      #- /etc/sudoers:/etc/sudoers:ro
+      - ./home_carto:/home/$USER
+      - ./shell/tmux.conf:/home/$USER/.tmux.conf
+      - ./shell/entrypoint.sh:/home/$USER/entrypoint.sh
+      - ./shell/cmake.sh:/home/$USER/cmake.sh
+      - /home/$USER/CLionProjects:/home/$USER/CLionProjects
+      - ./share:/home/$USER/share
+      - /home/$USER/tools:/home/$USER/tools
+      - ./home_carto/cartographer_ros:/opt/cartographer_ros/share/cartographer_ros
+
+
+    entrypoint: /home/$USER/entrypoint.sh
+    #command : "sudo v2raya --reset-password"
+    stop_signal: SIGKILL
+    pid: "host"
+    ipc: host
+    privileged: true
+    read_only: false
+    stdin_open: true
+    tty: true
+    #cpuset: 0,1
+    #cpus: 0.3
+    #mem_limit: 300m
+    #mem_reservation: 100m
+        
