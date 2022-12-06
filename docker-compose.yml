@@ -20,7 +20,7 @@ services:
     user: "${UID}:${GID}"
     working_dir : "/home/$USER"
     environment:
-      - PYTHONUSERBASE=/home/$USER/python_deps
+      - PYTHONUSERBASE=/home/$USER/share/python_deps
       #- http_proxy="" #ok no need to map port
       #- https_proxy="" #ok no need to map port
       #- http_proxy=http://127.0.0.1:8889     #ok no need to map port
