@@ -27,5 +27,9 @@ RUN apt-get update && apt-get install -y ros-$ROS_DISTRO-plotjuggler-ros
 RUN apt-get install -y python3-pip
 #RUN pip install --user open3d
 
+RUN apt-get -y update && apt-get install -y xauth nautilus x11-xserver-utils
+RUN apt install -y libasio-dev libtinyxml2-dev libacl1-dev libncurses5-dev libshp-dev
+#RUN apt-get -y update && apt install -y openjdk-19-jdk openjdk-19-jre
 
-
+# for cross compile
+RUN apt-get -y install g++-mingw-w64 mingw-w64 gcc-multilib
